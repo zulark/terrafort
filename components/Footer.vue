@@ -11,10 +11,10 @@
         <div>
           <h5 class="text-lg font-semibold text-white uppercase mb-4">Links Rápidos</h5>
           <ul class="space-y-2">
-            <li><a href="#" class="hover:text-yellow-400 transition-colors">Home</a></li>
-            <li><a href="#" class="hover:text-yellow-400 transition-colors">Equipamentos</a></li>
-            <li><a href="#" class="hover:text-yellow-400 transition-colors">Sobre Nós</a></li>
-            <li><a href="#" class="hover:text-yellow-400 transition-colors">Contato</a></li>
+            <li><NuxtLink to="/" class="hover:text-yellow-400 transition-colors">Home</NuxtLink></li>
+            <li><NuxtLink to="/products" class="hover:text-yellow-400 transition-colors">Equipamentos</NuxtLink></li>
+            <li><NuxtLink to="/" class="hover:text-yellow-400 transition-colors">Sobre Nós</NuxtLink></li>
+            <li><NuxtLink to="/" class="hover:text-yellow-400 transition-colors">Contato</NuxtLink></li>
           </ul>
         </div>
 
@@ -47,3 +47,7 @@
 <script setup lang="ts">
 // Nenhuma lógica específica necessária para este componente simples
 </script>
+
+<style scoped>
+/* Estilos adicionais para o rodapé, se necessário */
+</style>
