@@ -51,8 +51,15 @@
 </template>
 
 <script setup>
+import { ref, watchEffect } from 'vue'; // Added ref, watchEffect
+import { useRouter } from 'vue-router'; // Added useRouter
 import Cards from '~/components/Cards.vue';
 import Carousel from '~/components/Carousel.vue';
+
+const supabase = useSupabaseClient();
+const user = useSupabaseUser(); // Reactive Supabase user state
+const router = useRouter(); // For navigation
+const userName = ref('');    // Reactive ref to store the user's name
 
 const products = [
    {
