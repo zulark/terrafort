@@ -1,89 +1,156 @@
 <template>
-    <section id="produtos">
-    <div class="container mx-auto py-8 px-2">
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-8">
-      <div
-        v-for="(product, i) in products"
-        :key="i"
-        class="col-span-1 bg-white rounded-xl shadow-lg overflow-hidden flex flex-col">
-        <div
-          class="h-100 bg-cover bg-center" 
-          :style="`background-image: url('${product.image}')`"
-        ></div>
-        <div class="p-4 flex-1 flex flex-col">
-          <h3 class="text-2xl font-bold mb-1">{{ product.name }}</h3>
-          <p class="text-green-700 text-xl font-semibold mb-1">R$ {{ product.price }} / dia</p>
-          <p class="text-gray-600 text-base mb-2 flex-1">{{ product.description }}</p>
-          <span
-            class="text-center inline-block px-2 py-1 rounded text-base font-semibold"
-            :class="product.available ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'"
-          >
-            {{ product.available ? 'Disponível' : 'Indisponível' }}
-          </span>
-          <NuxtLink to="/productDetails">
-            <button
-               class="mt-4 py-2 px-4 rounded transition-colors w-full text-white"
-               :class="product.available ? 
-                  'bg-yellow-500 hover:bg-yellow-600 cursor-pointer' : 
-                  'bg-yellow-500    cursor-not-allowed'"
-               :disabled="!product.available"
-               >
-            Alugar
-            </button>
-         </NuxtLink>
+  <Loading v-if="isLoading" message="Carregando produtos..." />
+
+  <section id="produtos" class="bg-gray-50 py-8 sm:py-12">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+
+      <!-- breadCrumb -->
+      <nav class="mb-6 sm:mb-8" aria-label="Breadcrumb">
+        <ol class="inline-flex items-center space-x-1 text-sm font-medium text-gray-700">
+          <li>
+            <NuxtLink to="/" class="text-yellow-500 hover:text-yellow-600">Início</NuxtLink>
+          </li>
+          <li>
+            <span class="mx-2">/</span>
+          </li>
+          <li class="text-gray-500">Produtos</li>
+        </ol>
+      </nav>
+
+      <div class="text-center mb-8 sm:mb-12">
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-900 md:text-4xl">
+          Nosso Catálogo de Máquinas
+        </h2>
+        <p class="mt-3 sm:mt-4 text-base sm:text-lg text-gray-600">
+          Encontre o equipamento ideal para o seu projeto.
+        </p>
+      </div>
+
+      <!--Filtros de pesquisa -->
+      <div class="mb-8 flex flex-col sm:flex-row sm:justify-center items-center">
+        <input type="text" placeholder="Pesquisar por nome ou categoria"
+          class="w-full sm:max-w-md px-4 py-2 border border-gray-300 bg-white rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 mb-2 sm:mb-0 sm:mr-2" />
+        <button
+          class="w-full sm:w-auto px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-400 cursor-pointer transition-colors duration-150 ease-in-out"
+          @click="searchProducts">
+          Pesquisar
+        </button>
+      </div>
+
+      <!-- Categorias -->
+      <div class="mb-8 flex flex-wrap justify-center gap-2 sm:gap-4">
+        <button
+          class="px-3 py-1.5 sm:px-4 sm:py-2 text-sm sm:text-base bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-colors duration-150 ease-in-out cursor-pointer"
+          @click="filterByCategory('*')">
+          Todos
+        </button>
+        <button
+          v-for="(category, i) in products.map(product => product.categoria_maquina).filter((v, i, a) => a.findIndex(t => (t.nome_categoria === v.nome_categoria)) === i)"
+          :key="category.id"
+          class="px-3 py-1.5 sm:px-4 sm:py-2 text-sm sm:text-base bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-colors duration-150 ease-in-out cursor-pointer"
+          @click="filterByCategory(category.nome_categoria)">
+          {{ category.nome_categoria }}
+        </button>
+      </div>
+
+      <div v-if="!isLoading" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+        <div v-for="product in products" :key="product.id_maquina"
+          class="group rounded-lg overflow-hidden  flex flex-col">
+          <div class="h-100 w-full bg-gray-100 overflow-hidden relative">
+            <NuxtLink :to="`/product/${product.id_maquina}`" class="block h-full w-full">
+              <img :src="product.img_path || 'https://www.svgrepo.com/show/508699/landscape-placeholder.svg'"
+                :alt="`Imagem de ${product.nome}`" class="h-full w-full object-cover object-center " />
+            </NuxtLink>
+          </div>
+          <div class="p-4 flex flex-col flex-grow">
+            <h3 class="text-lg font-semibold text-gray-800">
+              <NuxtLink :to="`/product/${product.id_maquina}`"
+                class="hover:text-yellow-600 transition-colors duration-200 focus:outline-none">
+                {{ product.nome }}
+              </NuxtLink>
+            </h3>
+            <p class="text-sm text-gray-500 mt-1">{{ product.categoria_maquina.nome_categoria }}</p>
+
+            <p class="text-gray-600 text-xs mt-2 flex-grow min-h-[3em]">
+              {{ product.descricao }}
+            </p>
+
+            <div class="flex justify-between items-center mt-3">
+              <p class="text-xl font-bold text-gray-900">R$ {{ product.preco_diaria }} <span
+                  class="text-sm font-normal text-gray-500">/ dia</span></p>
+              <span class="inline-block px-2.5 py-0.5 text-xs font-semibold rounded-full"
+                :class="product.disponivel ? 'text-green-800' : 'text-red-800'">
+                {{ product.disponivel ? 'Disponível' : 'Indisponível' }}
+              </span>
+            </div>
+
+            <div class="mt-4">
+              <NuxtLink :to="`/product/${product.id_maquina}`" class="block w-full">
+                <button
+                  class="w-full py-2 px-4 rounded-md font-semibold text-sm transition-colors duration-150 ease-in-out cursor-pointer"
+                  :class="product.disponivel ?
+                    'bg-yellow-500 text-white hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-opacity-50' :
+                    'bg-gray-300 text-gray-500 cursor-not-allowed'" :disabled="!product.disponivel">
+                  {{ product.disponivel ? 'Ver Detalhes' : 'Indisponível' }}
+                </button>
+              </NuxtLink>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-   </div>
-   </section>
+  </section>
 </template>
 
 <script setup>
+import { ref, onMounted } from 'vue';
+const supabase = useSupabaseClient();
+const products = ref([]);
+const isLoading = ref(true);
 
-const products = [
-  {
-    name: 'Escavadeira Deere 180G ',
-    price: '220,00',
-    description: 'Escavadeira de 18 toneladas, ideal para obras de grande porte. Possui caçamba de 0,8m³ e motor potente.',
-    available: true,
-    image: 'https://www.deere.com.br/assets/images/region-3/products/excavators/180g-lc/escavadeira_180g_estudio_1_large_f5bf43c97d57e86b8d13d816cde23b1667ee3117.jpg'
-  },
-  {
-    name: 'Escavadeira Volvo EC950EL',
-    price: '875,00',
-    description: 'Com mais de 424kN de força de desagregação e 408kN de força de arranque do braço, é um modelo que tem a combinação perfeita de potência e estabilidade para suportar tarefas de grande capacidade nas aplicações mais difíceis. ',
-    available: false,
-    image: 'https://assets.volvo.com/is/image/VolvoInformationTechnologyAB/1860x1050-11?wid=1024'
-  },
-  {
-    name: 'Escavadeira Compacta E680F',
-    price: '440,00',
-    description: 'A E680F é uma escavadeira compacta de 8 toneladas, ideal para espaços reduzidos. Possui caçamba de 0,4m³ e motor eficiente.',
-    available: true,
-    image: 'https://www.sdlgla.com/hubfs/Produtos%20Pt-Br/Resolu%C3%A7%C3%A3o%20%5BBAIXA%5D/E690F/Escav_E680F_2000x1330_Baixa_06.jpg'
-  },
-  {
-    name: 'Empilhadeira Caterpillar DP70N',
-    price: '110,00',
-    description: 'Empilhadeira Caterpillar DP70N, ideal para movimentação de cargas pesadas. Possui capacidade de 7 toneladas e motor potente.',
-    available: true,
-    image: 'https://static.wixstatic.com/media/ac8dc4_9d0e0e8f03f64f81ab006c774e01da0f~mv2.jpg/v1/fill/w_568,h_378,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/ac8dc4_9d0e0e8f03f64f81ab006c774e01da0f~mv2.jpg'
-  },
-  {
-    name: 'Rolo Compressor Caterpillar CS56B',
-    price: '125,00',
-    description: 'Rolo compressor Caterpillar CS56B, ideal para compactação de solos e asfalto. Possui peso operacional de 5,5 toneladas e motor potente.',
-    available: false,
-    image: 'https://cnhi-p-001-delivery.sitecorecontenthub.cloud/api/public/content/01afade59b164c6eafde113b413c9037?v=20170c64'
-  },
-  {
-    name: 'BobCat E165',
-    price: '150,00',
-    description: 'Escavadeira compacta Bobcat E165, ideal para espaços reduzidos. Possui caçamba de 0,5m³ e motor eficiente.',
-    available: true,
-    image: 'https://res.cloudinary.com/doosan-bobcat/image/upload/b_transparent,c_pad,dpr_2.0,f_auto,g_center,h_300,q_auto,w_400/c_pad,h_300,w_400/v1/bobcat-assets/alao-approved/br/products/loaders/skid-steer-loaders/models/s70/s70-studio?pgw=1'
+
+const fetchProducts = async () => {
+  isLoading.value = true;
+  const { data, error } = await supabase
+    .from('maquina')
+    .select('*, categoria_maquina(*)')
+    .eq('disponivel', true);
+
+  if (error) {
+    console.error('Erro ao buscar produtos:', error);
+  } else {
+    products.value = data;
+    isLoading.value = false;
   }
-]
+};
+
+onMounted(async () => {
+  fetchProducts();
+});
+
+const searchProducts = () => {
+  const searchTerm = document.querySelector('input[type="text"]').value.toLowerCase();
+  if (searchTerm) {
+    products.value = products.value.filter(product =>
+      product.nome.toLowerCase().includes(searchTerm) ||
+      product.categoria_maquina.nome_categoria.toLowerCase().includes(searchTerm)
+    );
+  } else {
+    fetchProducts();
+  }
+  if (searchTerm === '') {
+    fetchProducts();
+  }
+};
+
+const filterByCategory = (category) => {
+  if (category === '*') {
+    fetchProducts();
+  } else {
+    products.value = products.value.filter(product => product.categoria_maquina.nome_categoria === category);
+  }
+};
+
 </script>
 
 <style scoped>
