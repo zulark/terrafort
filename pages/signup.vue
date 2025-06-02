@@ -14,17 +14,19 @@
                     <div>
                         <label for="name" class="block text-sm/6 font-medium text-gray-700">Nome</label>
                         <div class="mt-2">
-                            <input v-model="dataForm.name" type="text" name="name" id="name" autocomplete="name" required
+                            <input v-model="dataForm.name" type="text" name="name" id="name" autocomplete="name"
                                 class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" />
                         </div>
+                        <p v-if="errorMsg.name" class="mt-1 text-xs text-red-400">{{ errorMsg.name }}</p>
                     </div>
 
                     <div>
                         <label for="email" class="block text-sm/6 font-medium text-gray-700">Email</label>
                         <div class="mt-2">
-                            <input v-model="dataForm.email" type="email" name="email" id="email" autocomplete="email" required
+                            <input v-model="dataForm.email" type="email" name="email" id="email" autocomplete="email"
                                 class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" />
                         </div>
+                        <p v-if="errorMsg.email" class="mt-1 text-xs text-red-400">{{ errorMsg.email }}</p>
                     </div>
 
                     <div>
@@ -33,36 +35,36 @@
                         </div>
                         <div class="mt-2">
                             <input v-model="dataForm.password" type="password" name="password" id="password"
-                                autocomplete="current-password" required
+                                autocomplete="current-password"
                                 class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" />
                         </div>
+                        <p v-if="errorMsg.password" class="mt-1 text-xs text-red-400">{{ errorMsg.password }}</p>
                         <div class="flex items-center justify-between mt-2">
                             <label for="confirmPassword" class="block text-sm/6 font-medium text-gray-700">Confirmar
                                 Senha</label>
                         </div>
                         <div class="mt-2">
-                            <input v-model="dataForm.confirmPassword" type="password" name="confirmPassword" id="confirmPassword"
-                                autocomplete="current-password" required
+                            <input v-model="dataForm.confirmPassword" type="password" name="confirmPassword"
+                                id="confirmPassword" autocomplete="current-password"
                                 class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" />
                         </div>
-
+                        <p v-if="errorMsg.confirmPassword" class="mt-1 text-xs text-red-400">{{ errorMsg.confirmPassword
+                            }}</p>
                     </div>
-                    <div v-if="errorMsg" class="mt-2 text-center text-sm text-red-400">
-                        <p>{{ errorMsg }}</p>
+                    <div v-if="errorMsg.general" class="mt-2 text-center text-sm text-red-400">
+                        <p>{{ errorMsg.general }}</p>
                     </div>
                     <div>
                         <button type="submit"
                             class="cursor-pointer flex w-full justify-center rounded-md bg-yellow-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-yellow-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-600">Cadastrar-se
                         </button>
                     </div>
-                    <!-- sign up with google facebook etc -->
                     <div class="w-full flex items-center justify-between my-6">
                         <hr class="w-full border-gray-300" />
                         <span class="px-4 text-gray-700 text-sm">ou continue com</span>
                         <hr class="w-full border-gray-300" />
                     </div>
 
-                    <!-- Botões sociais (exemplo com Google e GitHub) -->
                     <div class="flex gap-4 justify-center">
                         <button
                             class="cursor-pointer flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-100 transition">
@@ -102,27 +104,44 @@ const dataForm = ref({
     confirmPassword: ''
 });
 
-const errorMsg = ref(null);
+const errorMsg = ref({});
 
 const handleRegister = async () => {
     try {
-        errorMsg.value = null;
-        if (dataForm.value.password !== dataForm.value.confirmPassword) {
-            errorMsg.value = 'As senhas não coincidem.';
-            return;
+        errorMsg.value = {};
+        let hasError = false;
+
+        if (dataForm.value.name.trim() === '') {
+            errorMsg.value.name = 'O nome é obrigatório.';
+            hasError = true;
+        }
+        if (dataForm.value.email.trim() === '') {
+            errorMsg.value.email = 'O email é obrigatório.';
+            hasError = true;
         }
         if (dataForm.value.password.length < 6) {
-            errorMsg.value = 'A senha deve ter pelo menos 6 caracteres.';
-            return;
+            errorMsg.value.password = 'A senha deve ter pelo menos 6 caracteres.';
+            hasError = true;
         }
-        
+        if (dataForm.value.password !== dataForm.value.confirmPassword) {
+            errorMsg.value.confirmPassword = 'As senhas não coincidem.';
+            hasError = true;
+        }
+
+        if (hasError) return;
+
         const { data: authData, error: authError } = await supabase.auth.signUp({
             email: dataForm.value.email,
             password: dataForm.value.password,
         });
 
         if (authError) {
-            errorMsg.value = authError.message;
+            if (authError.message.toLowerCase().includes('email')) {
+                errorMsg.value.email = authError.message;
+            } else {
+                errorMsg.value.general = authError.message;
+
+            }
             return;
         }
 
@@ -131,9 +150,9 @@ const handleRegister = async () => {
             const userName = dataForm.value.name;
 
             const { error: profileError } = await supabase
-                .from('cliente') 
+                .from('cliente')
                 .insert([
-                    { 
+                    {
                         user_id: userId,
                         nome: userName
                     }
@@ -141,27 +160,25 @@ const handleRegister = async () => {
 
             if (profileError) {
                 console.error('Erro ao salvar perfil do cliente:', profileError);
-                errorMsg.value = 'Usuário registrado, mas houve um problema ao salvar dados adicionais. Por favor, contate o suporte.';
+                errorMsg.value.general = 'Usuário registrado, mas houve um problema ao salvar dados adicionais. Por favor, contate o suporte.';
                 return;
             }
             if (authData.user && !authData.session) {
-                 errorMsg.value = null;
-                 alert('Registro bem-sucedido! Por favor, verifique seu e-mail para confirmar sua conta antes de fazer login.');
-                 router.push('/login');
+                alert('Registro bem-sucedido! Por favor, verifique seu e-mail para confirmar sua conta antes de fazer login.');
+                router.push('/login');
             } else if (authData.user && authData.session) {
-                router.push('/'); // Ou para onde quer que usuários logados devam ir
+                router.push('/');
             } else {
-                 router.push('/login'); // Fallback
+                router.push('/login');
             }
 
         } else {
-            // Caso inesperado onde authData.user não existe após signUp sem erro
-            errorMsg.value = "Registro falhou de forma inesperada.";
+            errorMsg.value.general = "Registro falhou de forma inesperada.";
         }
 
-    } catch (error) { // Erro geral da função async
+    } catch (error) {
         console.error('Erro geral ao registrar:', error);
-        errorMsg.value = 'Ocorreu um erro inesperado durante o registro.';
+        errorMsg.value.general = 'Ocorreu um erro inesperado durante o registro.';
     }
 };
 
