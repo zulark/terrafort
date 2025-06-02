@@ -1,5 +1,6 @@
 <template>
-  <div class="bg-white p-6 rounded-lg shadow-lg text-center md:text-left flex flex-col md:flex-row items-center md:space-x-4">
+  <div
+    class="bg-white p-6 rounded-lg shadow-lg text-center md:text-left flex flex-col md:flex-row items-center md:space-x-4">
     <div class="flex-shrink-0 mb-4 md:mb-0">
       <div class="w-16 h-16 rounded-full bg-yellow-100 flex items-center justify-center text-yellow-500">
         <slot name="icon">

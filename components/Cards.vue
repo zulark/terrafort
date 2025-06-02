@@ -41,6 +41,4 @@
 
 <script setup lang="ts">
 import FeatureCard from './FeatureCard.vue';
-// Os ícones SVG foram colocados diretamente no template.
-// Você pode também importá-los como componentes se preferir.
 </script>
