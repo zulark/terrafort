@@ -45,22 +45,14 @@
           {{ item.categoria_maquina?.nome_categoria || '-' }}
         </template>
         <template #cell-status="{ item }">
-          <span :class="{
-            'text-green-400 font-semibold': item.status === 'Disponível',
-            'text-yellow-400 font-semibold': item.status === 'Alugada',
-            'text-red-400 font-semibold': item.status === 'Em manutenção'
-          }">
-            {{ item.status }}
-          </span>
-        </template>
-        <template #cell-situacao="{ item }">
-          <span v-if="item.status === 'Disponível'"
-            class="bg-green-100 text-green-800 px-2 py-1 rounded">Disponível</span>
-          <span v-else-if="item.status === 'Alugada'"
-            class="bg-red-100 text-yellow-800 px-2 py-1 rounded">Indisponível</span>
-          <span v-else-if="item.status === 'Em manutenção'"
-            class="bg-red-100 text-red-800 px-2 py-1 rounded">Indisponível</span>
-          <span v-else class="bg-gray-100 text-gray-800 px-2 py-1 rounded">{{ item.status }}</span>
+          <select v-model="item.status"
+                  @change="updateMachineStatus(item.id_maquina, $event.target.value)"
+                  :class="getStatusClasses(item.status)"
+                  class="appearance-none rounded px-3 py-1 font-semibold text-center cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500">
+            <option value="Disponível">Disponível</option>
+            <option value="Alugada">Alugada</option>
+            <option value="Em manutenção">Em manutenção</option>
+          </select>
         </template>
       </ReportTable>
     </div>
@@ -83,7 +75,6 @@ const columns = [
   { key: 'nome', label: 'Nome' },
   { key: 'categoria', label: 'Categoria' },
   { key: 'status', label: 'Status' },
-  { key: 'situacao', label: 'Situação' },
 ];
 const categorias = ref([]);
 
@@ -107,6 +98,36 @@ const fetchMaquinas = async () => {
 };
 
 onMounted(fetchMaquinas);
+
+const getStatusClasses = (status) => {
+  switch (status) {
+    case 'Disponível':
+      return 'bg-green-100 text-green-800';
+    case 'Alugada':
+      return 'bg-yellow-100 text-yellow-800';
+    case 'Em manutenção':
+      return 'bg-red-100 text-red-800';
+    default:
+      return 'bg-gray-100 text-gray-800';
+  }
+};
+
+const updateMachineStatus = async (machineId, newStatus) => {
+  const { error } = await supabase
+    .from('maquina')
+    .update({ status: newStatus })
+    .eq('id_maquina', machineId);
+
+  if (error) {
+    console.error('Erro ao atualizar status da máquina:', error.message);
+    await fetchMaquinas(); // Recarrega para reverter a UI em caso de erro
+  } else {
+    const machine = maquinas.value.find(m => m.id_maquina === machineId);
+    if (machine) {
+      machine.status = newStatus;
+    }
+  }
+};
 
 function sortBy(key) {
   if (sortKey.value === key) {

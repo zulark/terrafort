@@ -78,10 +78,6 @@
             <div class="flex justify-between items-center mt-3">
               <p class="text-xl font-bold text-gray-900">R$ {{ product.preco_diaria }} <span
                   class="text-sm font-normal text-gray-500">/ dia</span></p>
-              <span class="inline-block px-2.5 py-0.5 text-xs font-semibold rounded-full"
-                :class="product.disponivel ? 'text-green-800' : 'text-red-800'">
-                {{ product.disponivel ? 'Disponível' : 'Indisponível' }}
-              </span>
             </div>
 
             <div class="mt-4">
