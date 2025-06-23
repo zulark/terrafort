@@ -49,7 +49,7 @@
           :key="category.id"
           class="px-3 py-1.5 sm:px-4 sm:py-2 text-sm sm:text-base bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-colors duration-150 ease-in-out cursor-pointer"
           @click="filterByCategory(category.nome_categoria)">
-          {{ category.nome_categoria }}
+          {{ category.nome_categoria }}s
         </button>
       </div>
 

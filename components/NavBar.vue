@@ -47,17 +47,17 @@
               </NuxtLink>
             </div>
           </div>
-        </div>
-
-        <div class="md:hidden flex items-center">
-          <button @click="mobileMenuOpen = !mobileMenuOpen"
-            class="text-gray-200 hover:text-yellow-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-yellow-500">
-            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path v-if="!mobileMenuOpen" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M4 6h16M4 12h16m-7 6h7" />
-              <path v-else stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
+          <!-- Mobile menu button -->
+          <div class="md:hidden flex items-center">
+            <button @click="mobileMenuOpen = !mobileMenuOpen"
+              class="text-gray-200 hover:text-yellow-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-yellow-500">
+              <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path v-if="!mobileMenuOpen" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M4 6h16M4 12h16m-7 6h7" />
+                <path v-else stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -65,15 +65,15 @@
         <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
           <NuxtLink to="/" :class="[
             'block px-3 py-2 rounded-md text-base font-medium',
-            route.path === '/' ? 'text-yellow-500 bg-gray-100' : 'text-gray-200 hover:bg-gray-50 hover:text-yellow-500'
+            route.path === '/' ? 'text-yellow-500 bg-zinc-900' : 'text-gray-200 hover:bg-zinc-800 hover:text-yellow-500'
           ]">Home</NuxtLink>
           <NuxtLink to="/products" :class="[
             'block px-3 py-2 rounded-md text-base font-medium',
-            route.path === '/products' ? 'text-yellow-500 bg-gray-100' : 'text-gray-200 hover:bg-gray-50 hover:text-yellow-500'
+            route.path === '/products' ? 'text-yellow-500 bg-zinc-900' : 'text-gray-200 hover:bg-zinc-800 hover:text-yellow-500'
           ]">Equipamentos</NuxtLink>
           <NuxtLink to="/login" :class="[
             'block px-3 py-2 rounded-md text-base font-medium',
-            route.path === '/login' ? 'text-yellow-500 bg-gray-100' : 'text-gray-200 hover:bg-gray-50 hover:text-yellow-500'
+            route.path === '/login' ? 'text-yellow-500 bg-zinc-900' : 'text-gray-200 hover:bg-zinc-800 hover:text-yellow-500'
           ]">Login</NuxtLink>
           <NuxtLink to="/signup" :class="[
             'block px-3 py-2 rounded-md text-base font-medium',

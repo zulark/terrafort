@@ -26,7 +26,7 @@
                     </li>
                     <li>
                         <NuxtLink to="/relatorios/relatorio-locacao" class="block py-2 px-3 rounded hover:bg-yellow-600"
-                            active-class="bg-yellow-700">Locações</NuxtLink>
+                            active-class="bg-yellow-700">Contratos</NuxtLink>
                     </li>
                     <li>
                         <NuxtLink to="/relatorios/relatorio-manutencao"
@@ -35,7 +35,12 @@
                     </li>
                     <li>
                         <NuxtLink to="/relatorios/relatorio-financeiro"
-                            class="block py-2 px-3 rounded hover:bg-yellow-600" active-class="bg-yellow-700">Financeiro
+                            class="block py-2 px-3 rounded hover:bg-yellow-600" active-class="bg-yellow-700">Rentabilidade
+                        </NuxtLink>
+                    </li>
+                    <li>
+                        <NuxtLink to="/relatorios/relatorio-auditoria"
+                            class="block py-2 px-3 rounded hover:bg-yellow-600" active-class="bg-yellow-700">Auditoria
                         </NuxtLink>
                     </li>
                 </ul>
