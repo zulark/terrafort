@@ -8,7 +8,7 @@
         id-key="id_manutencao"
         :items-per-page="10"
         search-placeholder="Pesquisar equipamento, responsável, observação..."
-        :search-keys="['maquina.nome','realizada_por','descricao','status_auditoria']"
+        :search-keys="['maquina.nome','realizada_por','descricao']"
       >
         <template #filters>
           <div class="flex gap-3">
@@ -59,7 +59,6 @@ const filtros = ref({
 const columns = [
   { key: 'maquina', label: 'Equipamento' },
   { key: 'data_manutencao', label: 'Data' },
-  { key: 'status_auditoria', label: 'Conformidade' },
   { key: 'descricao', label: 'Observação' },
   { key: 'realizada_por', label: 'Responsável' },
 ];

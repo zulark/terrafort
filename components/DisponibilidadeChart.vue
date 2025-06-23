@@ -24,8 +24,8 @@ const chartOptions = ref({
 });
 
 async function fetchDisponibilidade() {
-  const { $supabase } = useNuxtApp();
-  const { data } = await $supabase.from('maquina').select('status');
+const supabase = useSupabaseClient();
+  const { data } = await supabase.from('maquina').select('status');
   const statusCount = { 'Disponível': 0, 'Alugada': 0, 'Em manutenção': 0 };
   (data || []).forEach(m => {
     if (statusCount[m.status] !== undefined) statusCount[m.status]++;
